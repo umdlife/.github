@@ -1,6 +1,6 @@
 ---
 name: "\U0001F41E  Bug report"
-about: Report an issue with this repo
+about: Report an issue to this repository.
 title: ''
 labels: bug, triage
 assignees: ''

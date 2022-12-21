@@ -1,6 +1,6 @@
 ---
 name: "\U0001F4DD Feature request"
-about: Request a feature to this repo
+about: Request a feature to this repository.
 title: ''
 labels: enhancement, triage, rule
 assignees: ''
