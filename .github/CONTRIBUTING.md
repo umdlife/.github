@@ -253,7 +253,7 @@ Further paragraphs come after blank lines.
 - Use a hanging indent
 ```
 
-# Confluence Code of conduct (A. Sushil)
+# Confluence Contributing guidelines (A. Sushil)
 
 ## 👋 Welcome to developer contribution guideline! 
 
