@@ -1,4 +1,6 @@
-## Hi there 👋
+## Hi there 👋 Welcome to Unmanned Life Dev Team!
+
+Read up on how to contribute [here](https://github.com/umdlife/.github/blob/main/.github/CONTRIBUTING.md)
 
 <!--
 
