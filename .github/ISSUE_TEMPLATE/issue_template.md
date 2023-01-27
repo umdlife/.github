@@ -1,11 +1,11 @@
----
-name: "\U0001F4DD Feature request"
+<!-- ---
+name: "\U0001F4DD General request"
 about: Request a feature to this repository.
 title: ''
 labels: enhancement, triage, rule
 assignees: ''
 
----
+--- -->
 
 ## Feature request
 
