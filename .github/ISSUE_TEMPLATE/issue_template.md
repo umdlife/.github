@@ -1,11 +1,3 @@
----
-name: "\U0001F4DD General request"
-about: Request a general feature to this repository.
-title: ''
-labels: feature, triage, rule
-assignees: ''
-
----
 
 ## Feature request
 
