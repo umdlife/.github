@@ -51,7 +51,7 @@ services:
       ROBOT_ID: 100/sitl
       ROS_DOMAIN_ID: 60
       NETWORK: local
-    command: ros2 launch umd_copter_bt px4_bt_navigator.launch.py run_mode:=sim
+    command: ros2 launch umd_robot_executor robot_bt_navigator.launch.py run_mode:=sim
   mission:
     container_name: mission
     image: umdlife/umd-mission-dev:latest
@@ -60,15 +60,50 @@ services:
       VPN: disable
       ROS_DOMAIN_ID: 60
       NETWORK: local
-    command: ros2 launch umd_mission_core vienna_mission_core.launch.py run_sim:=true
-  web:
-    container_name: web
+    command: ros2 launch umd_mission_core mission_core.launch.py
+  database:
+    image: postgis/postgis:14-3.3
+    container_name: database
+    network_mode: host
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=users
+    # ports:
+    #   - '5432:5432'
+  redis:
+    image: redis:6.2.5
+    container_name: redis
+    network_mode: host
+    restart: always
+    environment:
+      - REDIS_PASSWORD=redis
+    # ports:
+    #   - '6379:6379'
+  web-backend:
+    container_name: web-backend
     image: umdlife/umd-web-dev:latest
+    depends_on:
+      - database
+      - redis
     network_mode: host
     environment:
         ROS_DOMAIN_ID: 60
         NETWORK: local
-        VPN: disable   
+        VPN: disable
+        # VITE_DISABLE_AUTH: 1
+        TOKEN_SECRET: 1234567890
+        VITE_MAPBOX_URL: pk.eyJ1IjoiZ25leWhhYnViIiwiYSI6ImNsYmk4MjMyZTA3Y2Ezbm9kYm5keTVhNDQifQ.61SwBpBAbsm3r87qdHBsZQ
+        VITE_BASE_URL: http://localhost:8081
+        VITE_SOCKET_URL: ws://localhost:8081
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/umd_web_database?schema=public
+        REDIS_URL: redis://localhost:6379
+    volumes:
+      - type: bind
+        source: /home/unmanned/umd2_ws/src/umd_mission/umd_utils/cfg
+        target: /umd2_ws/install/umd_utils/share/umd_utils/cfg
+   
 
 ```
 
