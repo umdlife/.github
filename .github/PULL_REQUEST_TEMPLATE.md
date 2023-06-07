@@ -99,10 +99,6 @@ services:
         VITE_SOCKET_URL: ws://localhost:8081
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/umd_web_database?schema=public
         REDIS_URL: redis://localhost:6379
-    volumes:
-      - type: bind
-        source: /home/unmanned/umd2_ws/src/umd_mission/umd_utils/cfg
-        target: /umd2_ws/install/umd_utils/share/umd_utils/cfg
    
 
 ```
