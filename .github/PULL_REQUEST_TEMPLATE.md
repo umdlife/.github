@@ -104,6 +104,38 @@ services:
 ```
 
 </details>
+
+<details>
+  <summary>Upload Mission</summary>
+
+```
+ros2 action send_goal /mission_core/upload_mission umd_mission_interfaces/action/UploadMission "bt_xml: mission.xml
+mission_params:
+  mission_speed: 5.0
+  rth_height: 20.0
+failsafes:
+  low_battery:
+    value: 0.2
+    failsafe: 1
+  critical_battery:
+    value: 0.2
+    failsafe: 2
+  rc_link_lost:
+    value: 10.0
+    failsafe: 1
+  gps_link_lost:
+    value: 20.0
+    failsafe: 1
+  cellular_link_lost:
+    value: 0.0
+    failsafe: 0
+  manager_link_lost:
+    value: 5.0
+    failsafe: 1"
+
+```
+</details>
+
  Open the interface in the browser and execute a mission. Interact with all the buttons to make sure it works as before.
 
 ## Description of contribution in a few bullet points
