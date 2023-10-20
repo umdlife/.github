@@ -12,131 +12,130 @@
 
 ---
 ## How to run this PR feature
-<!--
-* Branches to be checkout
-* Instruction to run the docker/command/ blah blah
--->
 
 <details>
     <summary>Run simulation</summary>
 
 ```bash
 xhost +local:root
-docker run -it --rm --net host --privileged --gpus all -e DISPLAY=$DISPLAY -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics -e ROBOT_NAME=1 --mount type=bind,source=/tmp/.X11-unix,target=/tmp/.X11-unix umdlife/umd-simulation-dev:latest roslaunch umd_simulation three_iris_mavros_sitl.launch
+docker run -it --rm --net host --privileged --name simulation --gpus all --env DISPLAY=$DISPLAY --env-file simulation.env --mount type=bind,source=/tmp/.X11-unix,target=/tmp/.X11-unix umdlife/umd-simulation-dev:ros2 ros2 launch umd_simulation ros2_iris_mavros.launch.py
 ```
 
 </details>
 
 <details>
-  <summary>Run docker compose</summary>
+  <summary>Run docker compose (uncomment docking service if needed)</summary>
 
 ```yaml
 version: "3.4"
-
 services:
-  bridge:
-    container_name: bridge
-    image: umdlife/umd-bridge:v2.0.4
-    network_mode: host
-    environment:
-      ROS_DOMAIN_ID: 60
-      NETWORK: local
-    command: ros2 run ros1_bridge parameter_bridge /bridge_topics /bridge_service_1_to_2 /bridge_service_2_to_1
   copter100:
     container_name: copter100
     image: umdlife/umd-copter-dev:latest
     network_mode: host
-    environment:
-      ROBOT_MODEL: iris
-      ROBOT_ID: 100/sitl
-      ROS_DOMAIN_ID: 60
-      NETWORK: local
+    env_file:
+      - ./simulation.env
     command: ros2 launch umd_robot_executor robot_bt_navigator.launch.py run_mode:=sim
   mission:
     container_name: mission
     image: umdlife/umd-mission-dev:latest
     network_mode: host
-    environment:
-      VPN: disable
-      ROS_DOMAIN_ID: 60
-      NETWORK: local
+    env_file:
+      - ./simulation.env
     command: ros2 launch umd_mission_core mission_core.launch.py
   database:
     image: postgis/postgis:14-3.3
     container_name: database
     network_mode: host
     restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=users
-    # ports:
-    #   - '5432:5432'
-  redis:
-    image: redis:6.2.5
-    container_name: redis
-    network_mode: host
-    restart: always
-    environment:
-      - REDIS_PASSWORD=redis
-    # ports:
-    #   - '6379:6379'
-  web-backend:
-    container_name: web-backend
+    env_file:
+      - ./simulation.env
+    healthcheck:
+      test: pg_isready -U postgres -d postgres
+      interval: 10s
+      timeout: 3s
+      retries: 3
+  backend:
+    container_name: backend
     image: umdlife/umd-web-dev:latest
     depends_on:
-      - database
-      - redis
+      database:
+        condition: service_healthy
     network_mode: host
+    env_file:
+      - ./simulation.env
     environment:
-        ROS_DOMAIN_ID: 60
-        NETWORK: local
-        VPN: disable
-        # VITE_DISABLE_AUTH: 1
-        TOKEN_SECRET: 1234567890
-        VITE_MAPBOX_URL: pk.eyJ1IjoiZ25leWhhYnViIiwiYSI6ImNsYmk4MjMyZTA3Y2Ezbm9kYm5keTVhNDQifQ.61SwBpBAbsm3r87qdHBsZQ
-        VITE_BASE_URL: http://localhost:8081
-        VITE_SOCKET_URL: ws://localhost:8081
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/umd_web_database?schema=public
-        REDIS_URL: redis://localhost:6379
-   
-
+      NETWORK: local_old
+  # docking100:
+  #   container_name: docking100
+  #   image: umdlife/umd-docking-dev:latest
+  #   network_mode: host
+  #   env_file:
+  #     - ./simulation.env
+  #   environment:
+  #     ROBOT_MODEL: heisha_d135
+  #     ROBOT_ID: 100
+  #     DEVICE_NAME: sfkKrZ40sdOSwVIAdq8N
+  #   volumes:
+  #     - ./heisha_params.yaml:/umd2_ws/install/umd_docking_hal/share/umd_docking_hal/config/heisha_params.yaml
 ```
 
 </details>
 
 <details>
-  <summary>Upload Mission</summary>
+  <summary>Environmental variables: simulation.env file</summary>
 
 ```
-ros2 action send_goal /mission_core/upload_mission umd_mission_interfaces/action/UploadMission "bt_xml: mission.xml
-mission_params:
-  mission_speed: 5.0
-  rth_height: 20.0
-failsafes:
-  low_battery:
-    value: 0.2
-    failsafe: 1
-  critical_battery:
-    value: 0.2
-    failsafe: 2
-  rc_link_lost:
-    value: 10.0
-    failsafe: 1
-  gps_link_lost:
-    value: 20.0
-    failsafe: 1
-  cellular_link_lost:
-    value: 0.0
-    failsafe: 0
-  manager_link_lost:
-    value: 5.0
-    failsafe: 1"
+#GENERAL
+ROS_DOMAIN_ID=90
+ROBOT_MODEL=iris
+ROBOT_ID=100
+NETWORK=local
+DDS_IP_1=localhost
+DDS_IFACE=auto
+RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+DDS_VERBOSITY=info
+
+#WEB - POSTGRESS
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=users
+
+#WEB - BACKEND
+TOKEN_SECRET=1234567890
+VITE_MAPBOX_URL=pk.eyJ1IjoiZ25leWhhYnViIiwiYSI6ImNsbmlvbW13ajEzeGMycW1pZzN0cnhvengifQ.Lrk1Nk5Ln0EfubS5GfhOQQ
+VITE_BASE_URL=http://localhost:8081
+VITE_SOCKET_URL=ws://localhost:8081
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/umd_web_database?schema=public
+VPN=disable
+
+#SIMULATION 
+NVIDIA_VISIBLE_DEVICES=all
+NVIDIA_DRIVER_CAPABILITIES=graphics
+ROBOT_NAME=1
 
 ```
 </details>
 
- Open the interface in the browser and execute a mission. Interact with all the buttons to make sure it works as before.
+<details>
+  <summary>Params for docking: heisha_params.yaml file</summary>
+
+```yaml
+/**:
+
+  ros__parameters:
+    mqtt_server_ip: '127.0.0.1'
+    mqtt_server_port: 1883
+    topic_header: 'heisha/dnest'
+    login_topics: ['client/login','server/login_reply']
+    status_topics: ['client/post','server/post_reply']
+    service_topics: ['client/service_reply','server/service']
+    heartbeat_topics: ['client/heartbeat', 'server/heartbeat_reply']
+
+```
+</details>
+
+Open the interface and interact with the buttons. Link the robot to the docking station if needed. Create and upload a mission and monitor the behavior. At any point during the mission, verify that all the robot's functionalities are running correctly.
 
 ## Description of contribution in a few bullet points
 
