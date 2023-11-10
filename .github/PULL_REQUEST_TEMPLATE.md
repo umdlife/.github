@@ -131,6 +131,7 @@ ROBOT_NAME=1
     status_topics: ['client/post','server/post_reply']
     service_topics: ['client/service_reply','server/service']
     heartbeat_topics: ['client/heartbeat', 'server/heartbeat_reply']
+    heartbeat_timeout_sec: 3600
 
 ```
 </details>
