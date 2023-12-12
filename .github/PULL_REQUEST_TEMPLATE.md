@@ -8,7 +8,7 @@
 | ------ | ----------- |
 | Ticket(s) this addresses   | (Closes #IssueNumber) |
 | Primary OS tested on | (Ubuntu, MacOS, Windows) |
-| Robotic platform tested on | (Steve's Robot, gazebo simulation of Tally, hardware turtlebot) |
+| Robotic platform tested on | (Gazebo PX4 Simulation, DJIM300 HITL, DJIM300) |
 
 ---
 ## How to run this PR feature
@@ -18,7 +18,7 @@
 
 ```bash
 xhost +local:root
-docker run -it --rm --net host --privileged --name simulation --gpus all --env DISPLAY=$DISPLAY --env-file simulation.env --mount type=bind,source=/tmp/.X11-unix,target=/tmp/.X11-unix umdlife/umd-simulation-dev:ros2 ros2 launch umd_simulation ros2_iris_mavros.launch.py
+docker run -it --rm --net host --privileged --name simulation --gpus all --env DISPLAY=$DISPLAY --env-file simulation.env --mount type=bind,source=/tmp/.X11-unix,target=/tmp/.X11-unix umdlife/umd-simulation-dev:latest-amd64 ros2 launch umd_simulation ros2_iris_mavros.launch.py
 ```
 
 </details>
@@ -31,14 +31,14 @@ version: "3.4"
 services:
   copter100:
     container_name: copter100
-    image: umdlife/umd-copter-dev:latest
+    image: umdlife/umd-copter-dev:latest-amd64
     network_mode: host
     env_file:
       - ./simulation.env
     command: ros2 launch umd_robot_executor robot_bt_navigator.launch.py run_mode:=sim
   mission:
     container_name: mission
-    image: umdlife/umd-mission-dev:latest
+    image: umdlife/umd-mission-dev:latest-amd64
     network_mode: host
     env_file:
       - ./simulation.env
@@ -57,7 +57,7 @@ services:
       retries: 3
   backend:
     container_name: backend
-    image: umdlife/umd-web-dev:latest
+    image: umdlife/umd-web-dev:latest-amd64
     depends_on:
       database:
         condition: service_healthy
@@ -68,7 +68,7 @@ services:
       NETWORK: local_old
   # docking100:
   #   container_name: docking100
-  #   image: umdlife/umd-docking-dev:latest
+  #   image: umdlife/umd-docking-dev:latest-amd64
   #   network_mode: host
   #   env_file:
   #     - ./simulation.env
