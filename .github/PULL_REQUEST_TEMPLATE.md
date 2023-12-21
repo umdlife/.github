@@ -76,8 +76,6 @@ services:
   #     ROBOT_MODEL: heisha_d135
   #     ROBOT_ID: 100
   #     DEVICE_NAME: sfkKrZ40sdOSwVIAdq8N
-  #   volumes:
-  #     - ./heisha_params.yaml:/umd2_ws/install/umd_docking_hal/share/umd_docking_hal/config/heisha_params.yaml
 ```
 
 </details>
@@ -117,24 +115,7 @@ ROBOT_NAME=1
 ```
 </details>
 
-<details>
-  <summary>Params for docking: heisha_params.yaml file</summary>
-
-```yaml
-/**:
-
-  ros__parameters:
-    mqtt_server_ip: '127.0.0.1'
-    mqtt_server_port: 1883
-    topic_header: 'heisha/dnest'
-    login_topics: ['client/login','server/login_reply']
-    status_topics: ['client/post','server/post_reply']
-    service_topics: ['client/service_reply','server/service']
-    heartbeat_topics: ['client/heartbeat', 'server/heartbeat_reply']
-    heartbeat_timeout_sec: 3600
-
-```
-</details>
+If docking station is needed for this PR, use info from Confluence page [Docking - HowTo](https://unmannedlife.atlassian.net/wiki/spaces/UL/pages/2555445276/Docking+station+-+how+to+run+in+simulation).
 
 Open the interface and interact with the buttons. Link the robot to the docking station if needed. Create and upload a mission and monitor the behavior. At any point during the mission, verify that all the robot's functionalities are running correctly.
 
