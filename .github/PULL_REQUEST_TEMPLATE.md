@@ -7,7 +7,7 @@
 | Info | Please fill out this column |
 | ------ | ----------- |
 | Ticket(s) this addresses   | (Closes #IssueNumber) |
-| Primary OS tested on | (Ubuntu, MacOS, Windows) |
+| Primary OS tested on | (Ubuntu 22.04) |
 | Robotic platform tested on | (Gazebo PX4 Simulation, DJIM300 HITL, DJIM300) |
 
 ---
