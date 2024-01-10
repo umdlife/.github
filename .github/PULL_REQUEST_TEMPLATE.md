@@ -76,6 +76,8 @@ services:
   #     ROBOT_MODEL: heisha_d135
   #     ROBOT_ID: 100
   #     DEVICE_NAME: sfkKrZ40sdOSwVIAdq8N
+  #   privileged: true
+  #   command: bash -c "mosquitto -v & ros2 launch umd_docking_bt_executor docking_bt_executor.launch.py run_mode:=sim"
 ```
 
 </details>
